@@ -1,7 +1,7 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDTO } from './dto';
-import * as argon from 'argon2';
+import { ForbiddenException, Injectable } from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
+import { AuthDTO } from "./dto";
+import * as argon from "argon2";
 
 @Injectable()
 export class AuthService {
@@ -13,15 +13,15 @@ export class AuthService {
           email: dto.email,
         },
       });
-      if (!user) throw new ForbiddenException('Credentials Incorrect');
+      if (!user) throw new ForbiddenException("Credentials Incorrect");
       const pwdCompare = await argon.verify(user.password, dto.password);
       if (!pwdCompare) {
-        throw new ForbiddenException('Credentials Incorrect');
+        throw new ForbiddenException("Credentials Incorrect");
       }
       delete user.password;
       return user;
     } catch (err) {
-      if (err.code === 'P2002') {
+      if (err.code === "P2002") {
         throw err;
       }
     }
@@ -39,8 +39,8 @@ export class AuthService {
       delete user.password;
       return user;
     } catch (err) {
-      if (err.code === 'P2002') {
-        throw new ForbiddenException('Credentials Taken');
+      if (err.code === "P2002") {
+        throw new ForbiddenException("Credentials Taken");
       }
       throw err;
     }
