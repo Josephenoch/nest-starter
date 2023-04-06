@@ -6,7 +6,7 @@ import { AuthDTO } from './dto';
 export class AuthService {
   constructor(private prisma: PrismaService) {}
   login() {
-    return { 
+    return {
       msg: 'I have logged Up',
     };
   }
