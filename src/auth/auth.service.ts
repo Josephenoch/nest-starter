@@ -7,6 +7,7 @@ import * as argon from "argon2";
 export class AuthService {
   constructor(private prisma: PrismaService) {}
   async login(dto: AuthDTO) {
+    // console.log(dto)
     try {
       const user = await this.prisma.user.findUnique({
         where: {
@@ -24,6 +25,7 @@ export class AuthService {
       if (err.code === "P2002") {
         throw err;
       }
+      console.log(err);
     }
   }
 
