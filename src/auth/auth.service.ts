@@ -15,7 +15,7 @@ export class AuthService {
         lastName: dto.lastName,
       },
     });
-
+    delete user.hash;
     return { user };
   }
 
