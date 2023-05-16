@@ -13,8 +13,12 @@ export class AuthService {
         },
       });
       if (isUser) return { msg: 'User Already exists' };
+      const { password, ...data } = dto;
       const user = this.prisma.user.create({
-        data: dto,
+        data: {
+          ...data,
+          password_hash: password,
+        },
       });
       return user;
     } catch (err) {
