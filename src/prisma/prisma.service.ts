@@ -7,7 +7,7 @@ export class PrismaService extends PrismaClient {
     super({
       datasources: {
         db: {
-          url: '',
+          url: 'postgresql://josephenoch:@localhost:5432/bookmark_app?schema=public',
         },
       },
     });
