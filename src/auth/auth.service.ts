@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginAuthDTO, SignUpAuthDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as argon from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -14,19 +15,30 @@ export class AuthService {
       });
       if (isUser) return { msg: 'User Already exists' };
       const { password, ...data } = dto;
-      const user = this.prisma.user.create({
+      const password_hash = await argon.hash(password);
+      const user = await this.prisma.user.create({
         data: {
           ...data,
-          password_hash: password,
+          password_hash,
         },
       });
+      delete user.password_hash;
       return user;
     } catch (err) {
       return 'signed up';
     }
   }
 
-  login(dto: LoginAuthDTO) {
-    return 'logged in';
+  async login(dto: LoginAuthDTO) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+    if (!user) throw new UnauthorizedException('Invalid Credentials');
+    const isUser = await argon.verify(user.password_hash, dto.password);
+    if (!isUser) throw new UnauthorizedException('Invalid Credentials');
+    delete user.password_hash;
+    return user;
   }
 }
