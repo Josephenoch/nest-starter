@@ -41,7 +41,7 @@ export class AuthService {
     });
     if (!user) throw new ForbiddenException('Invalid Credentials');
     const isUser = await argon.verify(user.password_hash, dto.password);
-    if (!isUser) throw new ForbiddenException('Invalid Credentials');
+    if (!isUser) throw new ForbiddenException('Invalid Credential');
     return this.signToken({ sub: user.id, email: user.email });
   }
 
