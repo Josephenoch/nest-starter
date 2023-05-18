@@ -34,24 +34,20 @@ export class AuthService {
   }
 
   async login(dto: LoginAuthDTO) {
-    try {
-      const user = await this.prisma.user.findUnique({
-        where: {
-          email: dto.email,
-        },
-      });
-      if (!user) throw new ForbiddenException('Invalid Credentials');
-      const isUser = await argon.verify(user.password_hash, dto.password);
-      if (!isUser) throw new ForbiddenException('Invalid Credential');
-      return this.signToken({ sub: user.id, email: user.email });
-    } catch (err) {
-      console.log(err);
-    }
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+    if (!user) throw new ForbiddenException('Invalid Credentials');
+    const isUser = await argon.verify(user.password_hash, dto.password);
+    if (!isUser) throw new ForbiddenException('Invalid Credential');
+    return this.signToken({ sub: user.id, email: user.email });
   }
 
   async signToken(payload: { email: string; sub: string }) {
     return {
-      acess_token: await this.jwt.signAsync(payload, {
+      access_token: await this.jwt.signAsync(payload, {
         expiresIn: '7d',
         secret: this.config.get('JWT_SECRET'),
       }),
