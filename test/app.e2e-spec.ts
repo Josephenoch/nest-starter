@@ -73,6 +73,10 @@ describe('App e2e', () => {
           .expectStatus(400);
       });
 
+      test('Should throw exception if no body', () => {
+        return pactum.spec().post('/auth/signup').expectStatus(400);
+      });
+
       test('Should Sign Up', () => {
         return pactum
           .spec()
@@ -83,11 +87,35 @@ describe('App e2e', () => {
           .expectStatus(201);
       });
     });
+
     describe('Sign in', () => {
       const body: LoginAuthDTO = {
         email: 'jamesdoe@gmail.com',
         password: '123ewnkno21',
       };
+
+      test('Should throw exception if email empty', () => {
+        const { email, ...rest } = body;
+        return pactum
+          .spec()
+          .post('/auth/login')
+          .withBody({ ...rest })
+          .expectStatus(400);
+      });
+
+      test('Should throw exception if password empty', () => {
+        const { password, ...rest } = body;
+        return pactum
+          .spec()
+          .post('/auth/login')
+          .withBody({ ...rest })
+          .expectStatus(400);
+      });
+
+      test('Should throw exception if no body', () => {
+        return pactum.spec().post('/auth/login').expectStatus(400);
+      });
+ 
       test('Should SignIn', () => {
         return pactum
           .spec()
