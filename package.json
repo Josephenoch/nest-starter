@@ -17,8 +17,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "deploy": "npm install && npx prisma migrate deploy && npm run build && npm run start:prod"
+    "test:e2e": "dotenv -e .env.test -- jest --watch --no-cache --config ./test/jest-e2e.json",
+    "deploy": "yarn && npx prisma migrate deploy && yarn build && yarn start:prod",
+    "prisma:migrate:test": "dotenv -e .env.test -- npx prisma migrate dev",
+    "prisma:studio:test": "dotenv -e .env.test -- npx prisma studio"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -44,6 +46,7 @@
     "@typescript-eslint/parser": "^5.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "dotenv-cli": "^7.2.1",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
