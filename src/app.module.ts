@@ -6,7 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppController } from './app.controller';
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '' }),
     UserModule,
     AuthModule,
     PrismaModule,
