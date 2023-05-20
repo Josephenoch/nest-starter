@@ -1,7 +1,8 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Request } from 'express';
 import { JwtGuard } from 'src/auth/guard';
+import { UserDecorator } from 'src/auth/decorator';
+import { User } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -9,9 +10,7 @@ export class UserController {
 
   @Get('me')
   @UseGuards(JwtGuard)
-  me(@Req() req: any) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return req.user;
+  me(@UserDecorator() user: Omit<User, 'password_hash'>) {
+    return user;
   }
 }
