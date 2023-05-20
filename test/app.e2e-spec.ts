@@ -2,7 +2,8 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
-// import * as pactum from "pactum"
+import * as pactum from 'pactum';
+import { LoginAuthDTO, SignUpAuthDTO } from 'src/auth/dto';
 describe('App e2e', () => {
   let app: INestApplication;
   let prisma: PrismaService;
@@ -15,9 +16,11 @@ describe('App e2e', () => {
       imports: [AppModule],
     }).compile();
     app = moduleRef.createNestApplication();
-    app.use(new ValidationPipe({ whitelist: true }));
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
+    await app.listen(3333);
     prisma = app.get(PrismaService);
+    pactum.request.setBaseUrl('http://localhost:3333');
     await prisma.cleanDB();
   });
 
@@ -27,17 +30,78 @@ describe('App e2e', () => {
 
   describe('Auth', () => {
     describe('Sign up', () => {
-      test.todo('Should Sign Up');
+      const body: SignUpAuthDTO = {
+        email: 'jamesdoe@gmail.com',
+        password: '123ewnkno21',
+        first_name: 'James',
+        last_name: 'Doe',
+      };
+
+      test('Should throw exception if email empty', () => {
+        const { email, ...rest } = body;
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody({ ...rest })
+          .expectStatus(400);
+      });
+
+      test('Should throw exception if password empty', () => {
+        const { password, ...rest } = body;
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody({ ...rest })
+          .expectStatus(400);
+      });
+
+      test('Should throw exception if first_name empty', () => {
+        const { first_name, ...rest } = body;
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody({ ...rest })
+          .expectStatus(400);
+      });
+
+      test('Should throw exception if last_name empty', () => {
+        const { last_name, ...rest } = body;
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody({ ...rest })
+          .expectStatus(400);
+      });
+
+      test('Should Sign Up', () => {
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody({
+            ...body,
+          })
+          .expectStatus(201);
+      });
     });
     describe('Sign in', () => {
-      test.todo('Should Sign In');
+      const body: LoginAuthDTO = {
+        email: 'jamesdoe@gmail.com',
+        password: '123ewnkno21',
+      };
+      test('Should SignIn', () => {
+        return pactum
+          .spec()
+          .post('/auth/login')
+          .withBody({ ...body })
+          .expectStatus(200);
+      });
     });
   });
 
   describe('User', () => {
     // queries
     describe('Get me', () => {});
-
+ 
     // mutations
     describe('Edit me', () => {});
   });
