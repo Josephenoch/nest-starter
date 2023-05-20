@@ -4,6 +4,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { LoginAuthDTO, SignUpAuthDTO } from 'src/auth/dto';
+import { UpdateUserDto } from 'src/user/dto';
 describe('App e2e', () => {
   let app: INestApplication;
   let prisma: PrismaService;
@@ -121,17 +122,54 @@ describe('App e2e', () => {
           .spec()
           .post('/auth/login')
           .withBody({ ...body })
-          .expectStatus(200);
+          .expectStatus(200)
+          .stores('userAt', 'access_token');
       });
     });
   });
 
   describe('User', () => {
     // queries
-    describe('Get me', () => {});
- 
+    describe('Get me', () => {
+      test('Should get current user', () => {
+        return pactum
+          .spec()
+          .get('/user/me')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+      test('Should throw error without Bearer', () => {
+        return pactum.spec().get('/user/me').expectStatus(401);
+      });
+    });
+
     // mutations
-    describe('Edit me', () => {});
+    describe('Edit me', () => {
+      const body: UpdateUserDto = {
+        first_name: 'James',
+        last_name: 'Done',
+      };
+      test('Should update current user', () => {
+        return pactum
+          .spec()
+          .patch('/user/me')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({ ...body })
+          .expectStatus(200)
+          .expectBodyContains(body.last_name)
+          .expectBodyContains(body.first_name);
+      });
+
+      test('Should throw error with Bearer', () => {
+        return pactum
+          .spec()
+          .patch('/user/me')
+          .withBody({ ...body })
+          .expectStatus(401);
+      });
+    });
   });
 
   describe('Bookmark', ()=>{
