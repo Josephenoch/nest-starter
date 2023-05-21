@@ -34,7 +34,7 @@ export class BookmarkService {
           userID,
         },
         data: { ...data },
-      });
+      })[0];
     } catch (err) {
       throw new Error('Unknown error');
     }
@@ -47,7 +47,7 @@ export class BookmarkService {
           id,
           userID,
         },
-      });
+      })[0];
     } catch (err) {
       throw new UnauthorizedException();
     }
@@ -60,7 +60,7 @@ export class BookmarkService {
           id,
           userID,
         },
-      });
+      })[0];
     } catch (err) {
       throw new UnauthorizedException();
     }

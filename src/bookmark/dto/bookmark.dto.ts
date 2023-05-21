@@ -11,7 +11,7 @@ export class CreateBookMarkDTO {
 
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 }
 
 export class UpdateBookMarkDTO {
