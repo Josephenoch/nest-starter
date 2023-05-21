@@ -47,7 +47,7 @@ export class BookmarkService {
           id,
           userID,
         },
-      })[0];
+      });
     } catch (err) {
       throw new UnauthorizedException();
     }
@@ -55,12 +55,12 @@ export class BookmarkService {
 
   async getBookMarkWithID({ id, userID }: { id: string; userID: string }) {
     try {
-      return await this.prisma.bookMark.findMany({
+      return await this.prisma.bookMark.findFirst({
         where: {
           id,
           userID,
         },
-      })[0];
+      });
     } catch (err) {
       throw new UnauthorizedException();
     }

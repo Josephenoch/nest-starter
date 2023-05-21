@@ -22,8 +22,11 @@ export class BookmarkController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post('create-new')
-  createNewBookMark(@UserDecorator('id') id: string, dto: CreateBookMarkDTO) {
-    return this.bookmarkService.createBookmark({ ...dto, userID: id });
+  createNewBookMark(
+    @UserDecorator('id') userID: string,
+    dto: CreateBookMarkDTO,
+  ) {
+    return this.bookmarkService.createBookmark({ ...dto, userID });
   }
 
   @Get(':id')
