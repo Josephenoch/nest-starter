@@ -172,13 +172,13 @@ describe('App e2e', () => {
     });
   });
 
-  describe('Bookmark', ()=>{
+  describe('Bookmark', () => {
 
     // queries
     describe('Get bookmark by id', () => {});
     describe('Get bookmarks', () => {});
 
-    // mutations 
+    // mutations
     describe('Create bookmark', () => {});
     describe('Delete bookmark', () => {});
     describe('Edit bookmark', () => {});
