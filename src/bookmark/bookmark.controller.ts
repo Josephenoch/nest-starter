@@ -51,6 +51,7 @@ export class BookmarkController {
     return this.bookmarkService.deleteBookmark({ id, userID, ...body });
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteBookMark(@Param('id') id: string, @UserDecorator('id') userID: string) {
     return this.bookmarkService.deleteBookmark({ id, userID });
