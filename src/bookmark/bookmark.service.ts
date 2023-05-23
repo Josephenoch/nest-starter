@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../src/prisma/prisma.service';
 import { CreateBookMarkDTO, UpdateBookMarkDTO } from './dto';
 
 interface CreateDataInterface extends CreateBookMarkDTO {
@@ -18,10 +18,13 @@ export class BookmarkService {
   async createBookmark(dto: CreateDataInterface) {
     try {
       return await this.prisma.bookMark.create({
-        data: dto,
+        data: { ...dto },
       });
     } catch (err) {
-      throw new Error('Unknown error');
+      console.log(err);
+      throw new UnauthorizedException(
+        'Not allowed to perform request on this resource',
+      );
     }
   }
 
@@ -37,9 +40,11 @@ export class BookmarkService {
           id,
         },
         data: { ...data },
-      })[0];
+      });
     } catch (err) {
-      throw new Error('Unknown error');
+      throw new UnauthorizedException(
+        'Not allowed to perform request on this resource',
+      );
     }
   }
 
@@ -61,12 +66,14 @@ export class BookmarkService {
 
   async getBookMarkWithID({ id, userID }: { id: string; userID: string }) {
     try {
-      return await this.prisma.bookMark.findFirst({
+      const resp = await this.prisma.bookMark.findFirst({
         where: {
           id,
           userID,
         },
       });
+      if (!resp) throw new UnauthorizedException();
+      return resp;
     } catch (err) {
       throw new UnauthorizedException();
     }
@@ -90,6 +97,6 @@ export class BookmarkService {
         id,
       },
     });
-    if (userID === bookmark.userID) return true;
+    if (userID !== bookmark.userID) return true;
   }
 }

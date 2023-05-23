@@ -10,13 +10,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { UserDecorator } from 'src/auth/decorator';
-import { JwtGuard } from 'src/auth/guard';
+import { UserDecorator } from '../../src/auth/decorator';
+import { JwtGuard } from '../../src/auth/guard';
 import { CreateBookMarkDTO, UpdateBookMarkDTO } from './dto';
 import { BookmarkService } from './bookmark.service';
 
 @UseGuards(JwtGuard)
-@Controller('bookmark')
+@Controller('bookmarks')
 export class BookmarkController {
   constructor(private bookmarkService: BookmarkService) {}
 
@@ -24,20 +24,20 @@ export class BookmarkController {
   @Post('create-new')
   createNewBookMark(
     @UserDecorator('id') userID: string,
-    dto: CreateBookMarkDTO,
+    @Body() dto: CreateBookMarkDTO,
   ) {
     return this.bookmarkService.createBookmark({ ...dto, userID });
   }
 
   @Get(':id')
-  getBookmarkwithID(
+  async getBookmarkwithID(
     @Param('id') id: string,
     @UserDecorator('id') userID: string,
   ) {
     return this.bookmarkService.getBookMarkWithID({ id, userID });
   }
 
-  @Get('all-bookmark')
+  @Get('')
   getUserBookMarks(@UserDecorator('id') userID: string) {
     return this.bookmarkService.getUserBookMarks(userID);
   }
@@ -48,7 +48,7 @@ export class BookmarkController {
     @UserDecorator('id') userID: string,
     @Body() body: UpdateBookMarkDTO,
   ) {
-    return this.bookmarkService.deleteBookmark({ id, userID, ...body });
+    return this.bookmarkService.updateBookmark({ id, userID, ...body });
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
