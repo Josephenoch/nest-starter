@@ -10,8 +10,8 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { UserDecorator } from '../../src/auth/decorator';
-import { JwtGuard } from '../../src/auth/guard';
+import { UserDecorator } from 'src/auth/decorator';
+import { JwtGuard } from 'src/auth/guard';
 import { CreateBookMarkDTO, UpdateBookMarkDTO } from './dto';
 import { BookmarkService } from './bookmark.service';
 
