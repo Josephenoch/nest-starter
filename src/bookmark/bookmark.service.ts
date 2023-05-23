@@ -18,34 +18,45 @@ export class BookmarkService {
   async createBookmark(dto: CreateDataInterface) {
     try {
       return await this.prisma.bookMark.create({
-        data: dto,
+        data: { ...dto },
       });
     } catch (err) {
-      throw new Error('Unknown error');
+      console.log(err);
+      throw new UnauthorizedException(
+        'Not allowed to perform request on this resource',
+      );
     }
   }
 
   async updateBookmark(dto: UpdateDataInterface) {
     const { id, userID, ...data } = dto;
     try {
-      return await this.prisma.bookMark.updateMany({
+      if (await this.checkPermission(userID, id))
+        throw new UnauthorizedException(
+          'Not allowed to perform request on this resource',
+        );
+      return await this.prisma.bookMark.update({
         where: {
-          id: id,
-          userID,
+          id,
         },
         data: { ...data },
-      })[0];
+      });
     } catch (err) {
-      throw new Error('Unknown error');
+      throw new UnauthorizedException(
+        'Not allowed to perform request on this resource',
+      );
     }
   }
 
   async deleteBookmark({ id, userID }: { id: string; userID: string }) {
     try {
-      return await this.prisma.bookMark.deleteMany({
+      if (await this.checkPermission(userID, id))
+        throw new UnauthorizedException(
+          'Not allowed to perform request on this resource',
+        );
+      await this.prisma.bookMark.delete({
         where: {
           id,
-          userID,
         },
       });
     } catch (err) {
@@ -55,12 +66,14 @@ export class BookmarkService {
 
   async getBookMarkWithID({ id, userID }: { id: string; userID: string }) {
     try {
-      return await this.prisma.bookMark.findFirst({
+      const resp = await this.prisma.bookMark.findFirst({
         where: {
           id,
           userID,
         },
       });
+      if (!resp) throw new UnauthorizedException();
+      return resp;
     } catch (err) {
       throw new UnauthorizedException();
     }
@@ -76,5 +89,14 @@ export class BookmarkService {
     } catch (err) {
       throw new Error('Unknown error');
     }
+  }
+
+  async checkPermission(userID: string, id: string) {
+    const bookmark = await this.prisma.bookMark.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (userID !== bookmark.userID) return true;
   }
 }
